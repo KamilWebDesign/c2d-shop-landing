@@ -1,0 +1,18 @@
+/* Только для превью: упрощённая шапка и футер поверх настоящего CSS сайта.
+   В архив не попадает. */
+.c2l-shell-logo { font: 700 22px/48px Nunito, Arial, sans-serif; color: #205b9b; }
+.c2l-shell-actions { display: flex; align-items: center; gap: 24px; font-size: 14px; color: #205b9b; }
+.c2l-shell-btn { display: inline-flex; align-items: center; height: 43px; padding: 0 30px; border-radius: 6px; background: #205b9b; color: #fff; }
+.c2l-shell-btn--line { background: transparent; border: 1px solid #205b9b; color: #205b9b; }
+.c2l-shell-footer { padding: 60px 20px; margin-top: 40px; background: #f8fafc; color: #8997a6; text-align: center; }
+/* Страница без бокового меню: CSS сайта с 1440px сужает зону под меню
+   (calc(100% - 232px) / calc(100% - 414px)) — на наших страницах зона на всю ширину .wrapper */
+.wrapper__content { width: 100%; }
+/* Настоящая шапка сайта без его JS: на сайте до 1280px меню переезжает в бургер (data-da), в превью — прячем */
+@media (max-width: 1279px) { .header .header__menu, .header .header__banner { display: none; } }
+@media (max-width: 767px) { .header .actions-header__search, .header .actions-header__lang, .header .actions-header__signin { display: none; } }
+/* Стандартные блоки сайта без их JS: повторяем то, что делает Swiper на сайте
+   (callback: логотипы slidesPerView 3, spaceBetween 16) */
+.links-callback__slider .swiper-wrapper { display: flex; gap: 16px; }
+.links-callback__slider .swiper-slide { flex: 0 0 calc((100% - 32px) / 3); }
+@media (max-width: 767px) { .c2l-shell-actions span:not(.c2l-shell-btn) { display: none; } .c2l-shell-btn--line { display: none; } }

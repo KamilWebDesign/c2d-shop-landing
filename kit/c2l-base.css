@@ -1,0 +1,420 @@
+/* ==========================================================================
+   c2l-base.css — база для блоков лендингов Chat2Desk
+   Версия: 0.2 (токены сняты с живого сайта chat2desk.com, 2026-09-25;
+   сверены с UI-китом в Фигме, 2026-09-26)
+
+   Правила файла:
+   - всё только внутри .c2l (корень каждого блока) — на сайт ничего не течёт;
+   - все переменные с префиксом --c2l-;
+   - адаптив на container queries: ширина блока ≠ ширине экрана
+     (на сайте html{zoom:80%} при 1024–1920px, зона ограничена max-width .wrapper).
+
+   Контейнерные брейкпоинты (ширина контентной зоны в CSS px):
+     < 480   телефон            (320–440)
+     ≥ 480   большой телефон    (480–728)
+     ≥ 700   планшет            (728–983; НЕ 768 — на экране 768 зона всего 728)
+     ≥ 1000  десктоп            (1240–1624, рендер с zoom 0.8)
+   ========================================================================== */
+
+/* ---------- Токены ---------- */
+.c2l {
+  /* Цвета */
+  --c2l-c-text: #212121;
+  --c2l-c-text-2: #5d6a76;          /* фирстиль 2026: менее важный текст, AA на белом и tint */
+  --c2l-c-primary: #1e63b8;         /* фирстиль 2026: брендовый синий (был #205b9b) */
+  --c2l-c-primary-hover: #1a559e;
+  --c2l-c-primary-soft: #8fb1dc;    /* 50% */
+  --c2l-c-primary-25: #c6d8ed;      /* 25% */
+  --c2l-c-on-primary: #ffffff;
+  --c2l-c-bg: #ffffff;
+  --c2l-c-tint: #f3f7fb;            /* 5% — основной фон карточек и секций */
+  --c2l-c-tint-2: #e9f0f8;          /* 10% — более тёмный фон, фон при наведении */
+  --c2l-c-sky: #e0f2fc;             /* голубой */
+  --c2l-c-green: #e6f7e9;           /* фон CTA-баннера в ките */
+  --c2l-c-lilac: #eee7ff;           /* фирстиль 2026: выделение блоков */
+  --c2l-c-yellow: #fcf9ec;          /* фирстиль 2026: выделение блоков */
+  --c2l-c-positive: #38cd20;
+  --c2l-c-negative: #cd2020;
+  --c2l-grad-main: radial-gradient(circle at 50% 50%, #8fb1dc 0%, #1e63b8 100%);
+  --c2l-c-line: rgba(30, 99, 184, 0.12);
+  --c2l-c-chip: rgba(30, 99, 184, 0.1);
+
+  /* Шрифт — только Nunito Sans (решение заказчика 2026-09-28): /tpl/css/fonts-2026.css,
+     подключается на сайте один раз (в превью — kit/fonts). Пока его нет — OpenSans сайта. */
+  --c2l-font-text: "Nunito Sans", OpenSans, "Open Sans", Arial, sans-serif;
+  --c2l-font-head: var(--c2l-font-text);
+
+  /* Тени (UI-кит продукта: Shadow medium/200, Shadow Large/500) — для окон и карточек интерфейса */
+  --c2l-shadow-md: 0 8px 10px -4px rgba(30, 57, 87, 0.08), 0 4px 8px -4px rgba(30, 57, 87, 0.12);
+  --c2l-shadow-lg: 0 10px 32px -4px rgba(30, 57, 87, 0.1), 0 6px 14px -6px rgba(30, 57, 87, 0.12);
+
+  /* Радиусы */
+  --c2l-r-xl: 24px;                 /* 32px на десктопе */
+  --c2l-r-lg: 20px;
+  --c2l-r-md: 16px;
+  --c2l-r-sm: 10px;
+  --c2l-r-btn: 6px;
+
+  /* Отступы */
+  --c2l-space-section: 64px;        /* между блоками; 150px на десктопе */
+  --c2l-space-head: 32px;           /* заголовок секции → контент; 40px на десктопе */
+  --c2l-space-card: 24px;           /* внутренний отступ карточки; 32px на десктопе */
+  --c2l-gap: 16px;                  /* сетка; 24px на десктопе */
+
+  /* Кнопка */
+  --c2l-btn-h: 56px;               /* 44.8 экранных px при zoom80%, решение 2026-10-02 */
+
+  /* Движение */
+  --c2l-ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --c2l-dur: 0.2s;
+}
+
+/* ---------- Корень блока ---------- */
+.c2l {
+  container-type: inline-size;
+  display: block;
+  width: 100%;
+  margin: 0 0 var(--c2l-space-section);
+  color: var(--c2l-c-text);
+  font: 400 16px/24px var(--c2l-font-text);
+  text-align: left;
+}
+
+@container (min-width: 700px) {
+  .c2l > * { font-size: 18px; line-height: 27px; }  /* базовый текст 2026: Md 18/150% */
+}
+
+@container (min-width: 1000px) {
+  .c2l * { --c2l-space-head: 40px; --c2l-space-card: 32px; --c2l-gap: 24px; --c2l-r-xl: 32px; }
+}
+
+/* Отступ между секциями зависит от ширины контентной зоны, но у корня
+   нет контейнера-предка — поэтому здесь исключение: media по экрану. */
+@media (min-width: 1025px) {
+  .c2l { --c2l-space-section: 150px; }
+}
+
+/* ---------- Сброс внутри блока (не полагаемся на сброс сайта) ---------- */
+.c2l *,
+.c2l *::before,
+.c2l *::after { box-sizing: border-box; }
+
+.c2l :where(h1, h2, h3, h4, h5, h6, p, ul, ol, li, figure, blockquote, dl, dd) { margin: 0; padding: 0; }
+.c2l :where(ul, ol) { list-style: none; }
+.c2l :where(img, svg, video, picture) { display: block; max-width: 100%; }
+.c2l :where(img) { height: auto; }
+.c2l :where(a) { color: inherit; text-decoration: none; }
+.c2l :where(button) { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+.c2l :where(b, strong) { font-weight: 700; }
+/* hidden сильнее display у компонентов: скрытая панель не должна проявиться из-за display: grid/flex */
+.c2l [hidden] { display: none; }
+/* сайт красит все svg в currentColor — у иконок-обводок заливку задаём явно */
+.c2l svg[fill="none"] { fill: none; }
+
+/* ---------- Типографика ---------- */
+.c2l-h1,
+.c2l-h2,
+.c2l-h3,
+.c2l-h4 { font-family: var(--c2l-font-head); font-weight: 700; color: var(--c2l-c-text); text-wrap: balance; }
+/* H3/H4 в фирстиле — SemiBold (Nunito Sans вариативный, 600 есть). */
+.c2l-h3,
+.c2l-h4 { font-weight: 600; }
+
+/* Шкала фирстиля 2026 («Сайт/Desktop»). Телефон и планшет в фирстиле не заданы — подобраны. */
+.c2l-h1 { font-size: 32px; line-height: 36px; }
+.c2l-h2 { font-size: 28px; line-height: 32px; }
+.c2l-h3 { font-size: 24px; line-height: 30px; }
+.c2l-h4 { font-size: 20px; line-height: 26px; }
+
+.c2l-xl    { font-size: 20px; line-height: 26px; font-weight: 500; }  /* Xl */
+.c2l-lead  { font-size: 18px; line-height: 26px; }                    /* Lg */
+.c2l-text  { font-size: 16px; line-height: 24px; }                    /* Md */
+.c2l-small { font-size: 14px; line-height: 21px; }                    /* Sm */
+.c2l-xs    { font-size: 13px; line-height: 19px; }                    /* Xs */
+.c2l-muted { color: var(--c2l-c-text-2); }
+
+/* Крупные значения: свободное поле, заранее зарезервированная ширина при наборе. */
+.c2l-number { font-family: var(--c2l-font-text); font-size: 64px; line-height: 1; font-weight: 600; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+@container (min-width: 700px) { .c2l-number { font-size: 68px; } }
+@container (min-width: 1000px) { .c2l-number { font-size: 96px; } }
+
+
+@container (min-width: 700px) {
+  .c2l-h1 { font-size: 44px; line-height: 48px; }
+  .c2l-h2 { font-size: 36px; line-height: 40px; }
+  .c2l-h3 { font-size: 30px; line-height: 36px; }
+  .c2l-h4 { font-size: 24px; line-height: 30px; }
+
+  .c2l-xl    { font-size: 24px; line-height: 31px; }
+  .c2l-lead  { font-size: 22px; line-height: 31px; }
+  .c2l-text  { font-size: 18px; line-height: 27px; }
+  .c2l-small { font-size: 16px; line-height: 24px; }
+  .c2l-xs    { font-size: 14px; line-height: 21px; }
+}
+
+@container (min-width: 1000px) {
+  .c2l-h1 { font-size: 64px; line-height: 67px; }   /* 64/105% */
+  .c2l-h2 { font-size: 48px; line-height: 53px; }   /* 48/110% */
+  .c2l-h3 { font-size: 40px; line-height: 48px; }   /* 40/120% */
+  .c2l-h4 { font-size: 32px; line-height: 38px; }   /* 32/120% */
+}
+
+/* ---------- Шапка секции ---------- */
+.c2l-head { display: grid; gap: 12px; margin-bottom: var(--c2l-space-head); max-width: 880px; }
+.c2l-head--center { margin-inline: auto; text-align: center; justify-items: center; }
+
+/* ---------- Кнопки ---------- */
+.c2l-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: var(--c2l-btn-h);
+  padding: 0 32px;
+  border: 1px solid transparent;
+  border-radius: var(--c2l-r-btn);
+  font: 400 16px/24px var(--c2l-font-text);
+  text-align: center;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color var(--c2l-dur), color var(--c2l-dur), border-color var(--c2l-dur);
+}
+.c2l-btn:focus-visible { outline: 2px solid var(--c2l-c-primary); outline-offset: 3px; }
+
+.c2l-btn--primary { background: var(--c2l-c-primary); color: var(--c2l-c-on-primary); }
+.c2l-btn--primary:hover { background: var(--c2l-c-primary-hover); }
+
+/* вторичная — тональная: не спорит с основной за внимание (решение заказчика 2026-09-26, refs: disrupt-team#П2) */
+/* заливка полупрозрачная: видна и на белом, и на tint-фоне */
+.c2l-btn--tonal { background: var(--c2l-c-chip); color: var(--c2l-c-text); }
+.c2l-btn--tonal:hover { background: var(--c2l-c-primary-25); }
+
+.c2l-btn--light { background: var(--c2l-c-bg); color: var(--c2l-c-primary); }
+.c2l-btn--light:hover { background: var(--c2l-c-tint-2); }
+
+@container (max-width: 479px) {
+  .c2l-btn { width: 100%; white-space: normal; }
+}
+
+@container (min-width: 1000px) {
+  .c2l-btn { padding: 0 45px; }
+}
+
+/* ---------- Карточки и плашки ---------- */
+.c2l-card { padding: var(--c2l-space-card); border-radius: var(--c2l-r-md); background: var(--c2l-c-tint); }
+.c2l-card--line { background: transparent; border: 1px solid var(--c2l-c-line); border-radius: var(--c2l-r-lg); }
+.c2l-card--sky { background: var(--c2l-c-sky); }
+.c2l-card--primary { background: var(--c2l-c-primary); color: var(--c2l-c-on-primary); }
+
+.c2l-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 14px;
+  border-radius: var(--c2l-r-sm);
+  background: var(--c2l-c-chip);
+  font-size: 14px;
+  line-height: 22px;
+}
+
+/* ---------- Доступность и движение ---------- */
+.c2l-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Выделение текста — из палитры, а не браузерное */
+.c2l ::selection { background: rgba(30, 99, 184, 0.18); }
+
+/* prefers-reduced-motion: убираем движение в пространстве, смена цвета,
+   прозрачности и состояния остаётся (обратная связь не пропадает). */
+@media (prefers-reduced-motion: reduce) {
+  .c2l *,
+  .c2l *::before,
+  .c2l *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-property: color, background-color, border-color, outline-color, opacity, box-shadow !important;
+  }
+}
+
+/* ==========================================================================
+   Интерфейс продукта (c2l-ui) — компоненты Chat2Desk UI Kit New
+   Источник: Фигма «Chat2Desk UI Kit New (Copy)» PvcmmQImsrppDlD95th09b —
+   Main menu 12171:185, Menu 2nd lvl 1508:88, Message 1495:85 / 1492:18970,
+   System Notification 1616:18955 / 1824:33, Chat input 1625:19113,
+   Tags 1387:67, Cards 1912:0 (channels_mini, Operator).
+   Размеры кита заданы в единицах --c2l-u (1px кита × масштаб --c2l-ui-k),
+   поэтому окно продукта масштабируется целиком и остаётся «как в продукте».
+   Шрифт — Nunito Sans вместо Roboto (решение заказчика: один шрифт).
+   Отступления от кита ради контраста AA (только текст): ссылки и кнопки
+   #2B6FC2 вместо #549CF0, второстепенный текст #5D6A76 вместо #888/#7E93A0,
+   красный бейдж #C9372C вместо #E1574D. Иконки и заливки — цвета кита.
+   ========================================================================== */
+.c2l-ui {
+  --c2l-ui-k: 1.2;
+  --c2l-u: calc(var(--c2l-ui-k) * 1px);
+  --c2l-ui-main: #549cf0;           /* Main colors/Main — иконки, галочки */
+  --c2l-ui-link: #2b6fc2;           /* текстовые ссылки и кнопки (AA) */
+  --c2l-ui-brand: #205b9b;          /* иконки главного меню */
+  --c2l-ui-title: #3f3f3f;          /* For Text/Title */
+  --c2l-ui-text-2: #5d6a76;         /* второстепенный текст (AA) */
+  --c2l-ui-menu: #d2e0eb;           /* Background/Main menu bar */
+  --c2l-ui-bg: #f5f7f8;             /* Background/The intranet menu bar — фон чата */
+  --c2l-ui-out: #e0e9ef;            /* OutMessage — сообщение оператора */
+  --c2l-ui-input: #ecf1f3;          /* подложка поля ввода */
+  --c2l-ui-line: #e3eaef;
+  --c2l-ui-hover: rgba(84, 156, 240, 0.1);
+  --c2l-ui-neg: #c9372c;            /* Negative status (AA-вариант) */
+  --c2l-ui-pos: #83c62d;            /* Positive status */
+  --c2l-ui-note: #cef0a3;           /* комментарий оператора */
+  --c2l-ui-tag-red: #ff8888;
+  --c2l-ui-tag-yellow: #fff38b;
+  --c2l-ui-tag-blue: #abe1ff;
+  --c2l-ui-tag-pink: #e79ff2;
+  --c2l-ui-tag-orange: #ffb774;
+  --c2l-ui-tag-green: #c5f983;
+  --c2l-ui-tag-violet: #a2a1df;
+  font: 400 calc(14 * var(--c2l-u)) / calc(18.2 * var(--c2l-u)) var(--c2l-font-text);  /* кит: 14/18 */
+  color: var(--c2l-ui-title);
+  text-align: left;
+}
+.c2l-ui img { max-width: none; }
+.c2l-ui__ic { width: calc(20 * var(--c2l-u)); height: calc(20 * var(--c2l-u)); flex: none; }
+.c2l-ui__ic--16 { width: calc(16 * var(--c2l-u)); height: calc(16 * var(--c2l-u)); }
+.c2l-ui__ic--12 { width: calc(12 * var(--c2l-u)); height: calc(12 * var(--c2l-u)); }
+
+/* Окно: главное меню | меню 2-го уровня | список | чат | карточка */
+.c2l-ui-app {
+  display: flex;
+  align-items: stretch;
+  overflow: hidden;
+  border-radius: calc(8 * var(--c2l-u)) calc(8 * var(--c2l-u)) 0 0;
+  background: #fff;
+  box-shadow: var(--c2l-shadow-lg);
+}
+.c2l-ui-app > * { min-width: 0; }
+
+/* Главное меню (Main menu, 88px) */
+.c2l-ui-menu { flex: none; display: flex; flex-direction: column; align-items: center; width: calc(88 * var(--c2l-u)); padding-top: calc(20 * var(--c2l-u)); background: var(--c2l-ui-menu); }
+.c2l-ui-menu__logo { display: grid; place-items: center; width: calc(48 * var(--c2l-u)); height: calc(48 * var(--c2l-u)); margin-bottom: calc(27 * var(--c2l-u)); border-radius: 50%; background: #fff; }
+.c2l-ui-menu__logo img { width: calc(23 * var(--c2l-u)); height: calc(23 * var(--c2l-u)); }
+.c2l-ui-menu__item {
+  position: relative;
+  display: flex; flex-direction: column; align-items: center; gap: calc(10 * var(--c2l-u));
+  width: 100%; padding: calc(14 * var(--c2l-u)) calc(2 * var(--c2l-u));
+  color: var(--c2l-ui-brand);
+  font-size: calc(11 * var(--c2l-u)); line-height: calc(13 * var(--c2l-u)); text-align: center;
+}
+.c2l-ui-menu__item span { color: var(--c2l-ui-title); }
+.c2l-ui-menu__item.c2l-is-active { background: var(--c2l-ui-bg); }
+.c2l-ui-menu__item.c2l-is-marked::after { content: ""; position: absolute; top: calc(10 * var(--c2l-u)); right: calc(14 * var(--c2l-u)); width: calc(6 * var(--c2l-u)); height: calc(6 * var(--c2l-u)); border-radius: 50%; background: #e1574d; }
+.c2l-ui-menu__op { display: flex; flex-direction: column; align-items: center; gap: calc(6 * var(--c2l-u)); width: 100%; margin-top: auto; padding: calc(14 * var(--c2l-u)) calc(2 * var(--c2l-u)); background: var(--c2l-ui-hover); font-size: calc(11 * var(--c2l-u)); line-height: calc(13 * var(--c2l-u)); }
+.c2l-ui-menu__op img { width: calc(32 * var(--c2l-u)); height: calc(32 * var(--c2l-u)); border-radius: 50%; }
+.c2l-ui-rate { display: inline-flex; align-items: center; gap: calc(4 * var(--c2l-u)); padding: calc(2 * var(--c2l-u)) calc(4 * var(--c2l-u)); border-radius: 99px; background: #fff; }
+
+/* Меню 2-го уровня (Menu 2nd lvl) */
+.c2l-ui-side { flex: none; width: calc(212 * var(--c2l-u)); padding: calc(20 * var(--c2l-u)) calc(16 * var(--c2l-u)); background: var(--c2l-ui-bg); }
+.c2l-ui-side__title { margin-bottom: calc(16 * var(--c2l-u)); font-size: calc(24 * var(--c2l-u)); line-height: calc(28 * var(--c2l-u)); font-weight: 600; }
+.c2l-ui-side__group { display: flex; align-items: center; justify-content: space-between; margin: calc(12 * var(--c2l-u)) 0 calc(4 * var(--c2l-u)); font-weight: 600; }
+.c2l-ui-side__item { display: flex; align-items: center; justify-content: space-between; gap: calc(8 * var(--c2l-u)); padding: calc(6 * var(--c2l-u)) 0 calc(6 * var(--c2l-u)) calc(8 * var(--c2l-u)); }
+.c2l-ui-side__item.c2l-is-active { color: var(--c2l-ui-link); }
+.c2l-ui-count { display: inline-flex; align-items: center; gap: calc(4 * var(--c2l-u)); padding-left: calc(7 * var(--c2l-u)); border-radius: calc(20 * var(--c2l-u)); background: #fff; font-size: calc(12 * var(--c2l-u)); line-height: calc(14 * var(--c2l-u)); font-variant-numeric: tabular-nums; }
+.c2l-ui-badge { display: inline-block; min-width: calc(20 * var(--c2l-u)); padding: calc(3 * var(--c2l-u)) calc(7 * var(--c2l-u)); border-radius: 99px; background: var(--c2l-ui-neg); color: #fff; font-size: calc(12 * var(--c2l-u)); line-height: calc(14 * var(--c2l-u)); text-align: center; font-variant-numeric: tabular-nums; }
+
+/* Список диалогов */
+.c2l-ui-list { flex: none; width: calc(300 * var(--c2l-u)); border-right: 1px solid var(--c2l-ui-line); background: #fff; }
+.c2l-ui-search { display: flex; align-items: center; gap: calc(8 * var(--c2l-u)); margin: calc(14 * var(--c2l-u)); padding: calc(8 * var(--c2l-u)) calc(10 * var(--c2l-u)); border: 1px solid var(--c2l-ui-line); border-radius: calc(4 * var(--c2l-u)); color: var(--c2l-ui-text-2); }
+.c2l-ui-dialog { position: relative; display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 0 calc(12 * var(--c2l-u)); align-items: start; padding: calc(12 * var(--c2l-u)) calc(14 * var(--c2l-u)); border-bottom: 1px solid var(--c2l-ui-line); }
+.c2l-ui-dialog.c2l-is-active { background: var(--c2l-ui-hover); }
+.c2l-ui-dialog__name { display: block; overflow: hidden; font-weight: 600; white-space: nowrap; text-overflow: ellipsis; }
+.c2l-ui-dialog__text { display: block; overflow: hidden; color: var(--c2l-ui-text-2); white-space: nowrap; text-overflow: ellipsis; }
+.c2l-ui-dialog__meta { display: grid; justify-items: end; gap: calc(6 * var(--c2l-u)); color: var(--c2l-ui-text-2); font-size: calc(12 * var(--c2l-u)); line-height: calc(14 * var(--c2l-u)); font-variant-numeric: tabular-nums; }
+
+/* Аватар с каналом */
+.c2l-ui-ava { position: relative; display: block; flex: none; width: calc(40 * var(--c2l-u)); height: calc(40 * var(--c2l-u)); }
+.c2l-ui-ava > img:first-child { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
+.c2l-ui-ava--32 { width: calc(32 * var(--c2l-u)); height: calc(32 * var(--c2l-u)); }
+.c2l-ui-ava--56 { width: calc(56 * var(--c2l-u)); height: calc(56 * var(--c2l-u)); }
+.c2l-ui-ava__ch { position: absolute; right: calc(-4 * var(--c2l-u)); bottom: calc(-4 * var(--c2l-u)); width: calc(18 * var(--c2l-u)); height: calc(18 * var(--c2l-u)); border: calc(2 * var(--c2l-u)) solid #fff; border-radius: calc(6 * var(--c2l-u)); background: #fff; box-sizing: content-box; }
+.c2l-ui-ava__ch img { width: 100%; height: 100%; }
+.c2l-ui-ava--bot { display: grid; place-items: center; border: 1px solid var(--c2l-ui-menu); border-radius: 50%; background: var(--c2l-ui-bg); color: var(--c2l-ui-brand); }
+
+/* Чат */
+.c2l-ui-chat { flex: 1; display: flex; flex-direction: column; min-width: 0; background: var(--c2l-ui-bg); }
+.c2l-ui-chat__head { display: flex; align-items: center; gap: calc(12 * var(--c2l-u)); padding: calc(12 * var(--c2l-u)) calc(20 * var(--c2l-u)); border-bottom: 1px solid var(--c2l-ui-line); background: #fff; }
+.c2l-ui-chat__who { display: grid; min-width: 0; }
+.c2l-ui-chat__who b { overflow: hidden; font-weight: 600; white-space: nowrap; text-overflow: ellipsis; }
+.c2l-ui-chat__who span { color: var(--c2l-ui-text-2); font-size: calc(12 * var(--c2l-u)); line-height: calc(14 * var(--c2l-u)); }
+.c2l-ui-chat__body { flex: 1; display: flex; flex-direction: column; justify-content: flex-end; gap: calc(10 * var(--c2l-u)); padding: calc(20 * var(--c2l-u)); overflow: hidden; }
+.c2l-ui-day { align-self: center; color: var(--c2l-ui-text-2); font-size: calc(12 * var(--c2l-u)); line-height: calc(14 * var(--c2l-u)); }
+
+/* Сообщения (Message client / operator) */
+.c2l-ui-msg { align-self: flex-start; display: flex; align-items: flex-end; gap: calc(14 * var(--c2l-u)); max-width: 86%; padding: calc(14 * var(--c2l-u)) calc(14 * var(--c2l-u)) calc(6 * var(--c2l-u)); border-radius: 0 calc(6 * var(--c2l-u)) calc(6 * var(--c2l-u)) calc(6 * var(--c2l-u)); background: #fff; }
+.c2l-ui-msg__text { padding-bottom: calc(8 * var(--c2l-u)); overflow-wrap: anywhere; }
+.c2l-ui-msg__time { display: inline-flex; align-items: center; gap: calc(2 * var(--c2l-u)); flex: none; color: var(--c2l-ui-text-2); font-size: calc(12 * var(--c2l-u)); line-height: calc(14 * var(--c2l-u)); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.c2l-ui-msg__time svg { width: calc(16 * var(--c2l-u)); height: calc(16 * var(--c2l-u)); color: var(--c2l-ui-main); }
+.c2l-ui-out { align-self: flex-end; display: flex; align-items: flex-start; gap: calc(10 * var(--c2l-u)); max-width: 92%; }
+.c2l-ui-out .c2l-ui-msg { max-width: none; border-radius: calc(6 * var(--c2l-u)) 0 calc(6 * var(--c2l-u)) calc(6 * var(--c2l-u)); background: var(--c2l-ui-out); }
+.c2l-ui-note { align-self: flex-start; display: flex; align-items: flex-start; gap: calc(10 * var(--c2l-u)); max-width: 86%; padding: calc(14 * var(--c2l-u)) calc(14 * var(--c2l-u)) calc(6 * var(--c2l-u)); border-radius: calc(6 * var(--c2l-u)); background: var(--c2l-ui-note); }
+.c2l-ui-sys { align-self: center; display: grid; justify-items: center; gap: calc(8 * var(--c2l-u)); padding: calc(6 * var(--c2l-u)) calc(14 * var(--c2l-u)) calc(8 * var(--c2l-u)); font-size: calc(12 * var(--c2l-u)); line-height: calc(14 * var(--c2l-u)); text-align: center; }
+.c2l-ui-sys__row { display: flex; flex-wrap: wrap; justify-content: center; gap: calc(6 * var(--c2l-u)); }
+.c2l-ui-link { color: var(--c2l-ui-link); }
+.c2l-ui-typing { align-self: flex-start; display: inline-flex; gap: calc(4 * var(--c2l-u)); padding: calc(12 * var(--c2l-u)) calc(14 * var(--c2l-u)); border-radius: 0 calc(6 * var(--c2l-u)) calc(6 * var(--c2l-u)) calc(6 * var(--c2l-u)); background: #fff; }
+.c2l-ui-typing i { width: calc(6 * var(--c2l-u)); height: calc(6 * var(--c2l-u)); border-radius: 50%; background: var(--c2l-ui-main); animation: c2l-ui-typing 1.2s infinite ease-in-out both; }
+.c2l-ui-typing i:nth-child(2) { animation-delay: 0.15s; }
+.c2l-ui-typing i:nth-child(3) { animation-delay: 0.3s; }
+@keyframes c2l-ui-typing { 0%, 80%, 100% { opacity: 0.3; transform: translateY(0); } 40% { opacity: 1; transform: translateY(calc(-3 * var(--c2l-u))); } }
+
+/* Теги и тикеты (Tags & tickets) */
+.c2l-ui-tag { display: inline-flex; align-items: center; gap: calc(4 * var(--c2l-u)); padding: calc(4 * var(--c2l-u)); border-radius: calc(2 * var(--c2l-u)); background: var(--c2l-ui-tag-blue); color: var(--c2l-ui-title); font-size: calc(12 * var(--c2l-u)); line-height: calc(14 * var(--c2l-u)); white-space: nowrap; }
+.c2l-ui-tag--red { background: var(--c2l-ui-tag-red); }
+.c2l-ui-tag--yellow { background: var(--c2l-ui-tag-yellow); }
+.c2l-ui-tag--pink { background: var(--c2l-ui-tag-pink); }
+.c2l-ui-tag--orange { background: var(--c2l-ui-tag-orange); }
+.c2l-ui-tag--green { background: var(--c2l-ui-tag-green); }
+.c2l-ui-tag--violet { background: var(--c2l-ui-tag-violet); }
+.c2l-ui-role { display: inline-block; padding: calc(4 * var(--c2l-u)) calc(6 * var(--c2l-u)); border-radius: calc(4 * var(--c2l-u)); background: #f6d9d9; font-size: calc(14 * var(--c2l-u)); line-height: calc(18 * var(--c2l-u)); }
+.c2l-ui-role--super { background: #e3f3d6; }
+.c2l-ui-role--oper { background: #dde9fb; }
+
+/* Поле ввода (Chat input) */
+.c2l-ui-input { padding: calc(20 * var(--c2l-u)) calc(20 * var(--c2l-u)) calc(14 * var(--c2l-u)); background: var(--c2l-ui-input); }
+.c2l-ui-input__tabs { display: flex; }
+.c2l-ui-input__tab { padding: calc(8 * var(--c2l-u)) calc(14 * var(--c2l-u)); border-radius: calc(4 * var(--c2l-u)) calc(4 * var(--c2l-u)) 0 0; background: var(--c2l-ui-menu); color: var(--c2l-ui-brand); font-weight: 600; }
+.c2l-ui-input__tab.c2l-is-active { background: #fff; color: var(--c2l-ui-title); }
+.c2l-ui-input__field { display: flex; align-items: center; gap: calc(10 * var(--c2l-u)); padding: calc(10 * var(--c2l-u)) calc(16 * var(--c2l-u)) calc(10 * var(--c2l-u)) calc(10 * var(--c2l-u)); border-radius: 0 calc(4 * var(--c2l-u)) calc(4 * var(--c2l-u)) calc(4 * var(--c2l-u)); background: #fff; color: var(--c2l-ui-main); }
+.c2l-ui-input__text { flex: 1; min-width: 0; color: var(--c2l-ui-text-2); }
+
+/* Карточка клиента */
+.c2l-ui-card { flex: none; width: calc(280 * var(--c2l-u)); padding: calc(20 * var(--c2l-u)); border-left: 1px solid var(--c2l-ui-line); background: #fff; }
+.c2l-ui-card__row { display: grid; gap: calc(2 * var(--c2l-u)); padding: calc(10 * var(--c2l-u)) 0; border-bottom: 1px solid var(--c2l-ui-line); }
+.c2l-ui-card__row small { color: var(--c2l-ui-text-2); font-size: calc(12 * var(--c2l-u)); line-height: calc(14 * var(--c2l-u)); }
+
+/* Карточка клиента, комментарий, системная плашка — дополнения */
+.c2l-ui-sys--box { padding: calc(10 * var(--c2l-u)) calc(14 * var(--c2l-u)); border-radius: calc(6 * var(--c2l-u)); background: var(--c2l-ui-out); font-size: calc(14 * var(--c2l-u)); line-height: calc(18 * var(--c2l-u)); }
+.c2l-ui-note__ava { width: calc(32 * var(--c2l-u)); height: calc(32 * var(--c2l-u)); border-radius: 50%; }
+.c2l-ui-card__name { margin: calc(10 * var(--c2l-u)) 0 calc(4 * var(--c2l-u)); font-size: calc(16 * var(--c2l-u)); line-height: calc(20 * var(--c2l-u)); font-weight: 600; }
+.c2l-ui-card__chs { display: flex; gap: calc(6 * var(--c2l-u)); }
+.c2l-ui-card__tags { justify-content: flex-start; }
+
+/* Кнопки продукта (Button) */
+.c2l-ui-btn { display: inline-flex; align-items: center; justify-content: center; padding: calc(7 * var(--c2l-u)) calc(16 * var(--c2l-u)); border: 1px solid var(--c2l-ui-link); border-radius: calc(4 * var(--c2l-u)); background: var(--c2l-ui-link); color: #fff; font-size: calc(14 * var(--c2l-u)); line-height: calc(18 * var(--c2l-u)); }
+.c2l-ui-btn--line { background: #fff; color: var(--c2l-ui-link); }
+
+/* Переключатель (Switch) */
+.c2l-ui-switch { position: relative; flex: none; width: calc(28 * var(--c2l-u)); height: calc(16 * var(--c2l-u)); border-radius: 99px; background: #fff; box-shadow: inset 0 0 0 calc(1 * var(--c2l-u)) #d2d2d2; transition: background-color 0.2s; }
+.c2l-ui-switch::after { content: ""; position: absolute; top: calc(2 * var(--c2l-u)); left: calc(2 * var(--c2l-u)); width: calc(12 * var(--c2l-u)); height: calc(12 * var(--c2l-u)); border-radius: 50%; background: #fff; box-shadow: 0 calc(2 * var(--c2l-u)) calc(4 * var(--c2l-u)) rgba(39,73,112,.3); transition: transform 0.2s var(--c2l-ease); }
+.c2l-ui-switch.c2l-is-on { background: var(--c2l-ui-main); box-shadow: none; }
+.c2l-ui-switch.c2l-is-on::after { transform: translateX(calc(12 * var(--c2l-u))); }
+
+/* Появление нового элемента интерфейса (сообщение, диалог) */
+.c2l-ui-in { animation: c2l-ui-in 0.45s var(--c2l-ease) both; }
+@keyframes c2l-ui-in { from { opacity: 0; transform: translateY(calc(10 * var(--c2l-u))) scale(0.98); } to { opacity: 1; transform: none; } }
