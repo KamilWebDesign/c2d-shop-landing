@@ -1,5 +1,6 @@
 /* Chat2Desk для интернет-магазинов — скрипты блоков. Каждый блок — отдельный IIFE, без глобальных имён.
-   Перенесено из Design Lab (base.js): ленты, вкладки, появление при прокрутке, бегунок вкладок, живые сюжеты.
+   Из каталога (catalog/src/base.js): ленты, вкладки, появление при прокрутке, бегунок вкладок, живые сюжеты;
+   витрина категорий (rail-cards.js); переключатель периода тарифов (pricing.js).
    Повторная инициализация исключена: корень отмечается data-c2l-ready. */
 
 /* Вкладки: [data-c2l-tabs] > [role=tablist] > [role=tab][aria-controls] и [role=tabpanel].
@@ -188,5 +189,79 @@
         if (c2lVisible()) c2lPlay(); else c2lReset();
       }).observe(c2lPanel, { attributes: true, attributeFilter: ["hidden"] });
     }
+  });
+})();
+
+/* Витрина категорий: стрелки листают ряд карточек на одну карточку. */
+(() => {
+  "use strict";
+  document.querySelectorAll("[data-c2l-rail]").forEach((c2lRoot) => {
+    if (c2lRoot.hasAttribute("data-c2l-ready")) return;
+    c2lRoot.setAttribute("data-c2l-ready", "");
+    const c2lTrack = c2lRoot.querySelector(".c2l-rail-cards__track");
+    const c2lPrev = c2lRoot.querySelector("[data-c2l-rail-prev]");
+    const c2lNext = c2lRoot.querySelector("[data-c2l-rail-next]");
+    if (!c2lTrack || !c2lPrev || !c2lNext) return;
+    const c2lStep = () => {
+      const c2lCard = c2lTrack.querySelector("li");
+      const c2lGap = parseFloat(getComputedStyle(c2lTrack).columnGap) || 0;
+      return c2lCard ? c2lCard.offsetWidth + c2lGap : c2lTrack.clientWidth;
+    };
+    const c2lUpdate = () => {
+      const c2lMax = c2lTrack.scrollWidth - c2lTrack.clientWidth - 2;
+      c2lPrev.disabled = c2lTrack.scrollLeft <= 2;
+      c2lNext.disabled = c2lTrack.scrollLeft >= c2lMax;
+    };
+    c2lPrev.addEventListener("click", () => c2lTrack.scrollBy({ left: -c2lStep() }));
+    c2lNext.addEventListener("click", () => c2lTrack.scrollBy({ left: c2lStep() }));
+    c2lTrack.addEventListener("scroll", c2lUpdate, { passive: true });
+    window.addEventListener("resize", c2lUpdate);
+    c2lUpdate();
+  });
+})();
+
+/* Тарифы: переключатель периода оплаты [data-c2l-pricing] — как на chat2desk.com/tarifi.
+   Скидка периода (data-c2l-discount) пересчитывает цены [data-c2l-price], подпись периода и data-c2l-period кнопок.
+   Радиогруппа: стрелки, Home/End, выбор сразу при переходе. */
+(() => {
+  "use strict";
+  const c2lMoney = (c2lValue) => String(c2lValue).replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+  const c2lWord = (c2lMonths) => (c2lMonths === 1 ? "месяц" : c2lMonths < 5 ? "месяца" : "месяцев");
+  document.querySelectorAll("[data-c2l-pricing]").forEach((c2lRoot) => {
+    if (c2lRoot.hasAttribute("data-c2l-ready")) return;
+    c2lRoot.setAttribute("data-c2l-ready", "");
+    const c2lOpts = [...c2lRoot.querySelectorAll("[data-c2l-months]")];
+    const c2lSave = c2lRoot.querySelector("[data-c2l-save]");
+    if (!c2lOpts.length) return;
+    const c2lSelect = (c2lOpt, c2lFocus) => {
+      const c2lMonths = Number(c2lOpt.dataset.c2lMonths);
+      const c2lDiscount = Number(c2lOpt.dataset.c2lDiscount);
+      c2lOpts.forEach((c2lItem) => {
+        const c2lOn = c2lItem === c2lOpt;
+        c2lItem.setAttribute("aria-checked", String(c2lOn));
+        c2lItem.tabIndex = c2lOn ? 0 : -1;
+      });
+      if (c2lFocus) c2lOpt.focus();
+      c2lRoot.querySelectorAll("[data-c2l-price]").forEach((c2lPrice) => {
+        const c2lBase = Number(c2lPrice.dataset.c2lPrice);
+        c2lPrice.textContent = c2lMoney(Math.round((c2lBase * (100 - c2lDiscount)) / 100));
+      });
+      c2lRoot.querySelectorAll("[data-c2l-old]").forEach((c2lOld) => { c2lOld.hidden = !c2lDiscount; });
+      c2lRoot.querySelectorAll("[data-c2l-bill]").forEach((c2lBill) => {
+        c2lBill.textContent = "При оплате за " + c2lMonths + " " + c2lWord(c2lMonths);
+      });
+      c2lRoot.querySelectorAll("[data-c2l-tariff]").forEach((c2lBtn) => { c2lBtn.dataset.c2lPeriod = String(c2lMonths); });
+      if (c2lSave) c2lSave.textContent = c2lDiscount ? "Скидка " + c2lDiscount + "%" : "Без скидки";
+    };
+    c2lOpts.forEach((c2lOpt, c2lIndex) => {
+      c2lOpt.addEventListener("click", () => c2lSelect(c2lOpt, false));
+      c2lOpt.addEventListener("keydown", (c2lEvent) => {
+        const c2lLast = c2lOpts.length - 1;
+        const c2lNext = { ArrowRight: c2lIndex + 1, ArrowDown: c2lIndex + 1, ArrowLeft: c2lIndex - 1, ArrowUp: c2lIndex - 1, Home: 0, End: c2lLast }[c2lEvent.key];
+        if (c2lNext === undefined) return;
+        c2lEvent.preventDefault();
+        c2lSelect(c2lOpts[(c2lNext + c2lOpts.length) % c2lOpts.length], true);
+      });
+    });
   });
 })();

@@ -1,6 +1,6 @@
 # Chat2Desk для интернет-магазинов — блоки для передачи в разработку
 
-Собрано: 20261013-1910. Проверка пройдена на ширинах 360, 390, 768, 1024, 1280, 1440, 1920 px.
+Собрано: 20261015-1435. Проверка пройдена на ширинах 360, 390, 768, 1024, 1280, 1440, 1920 px.
 
 ## Шаг 0 — один раз для всего сайта: шрифт Nunito Sans
 
@@ -21,7 +21,7 @@
 | `tpl/css/internet-magaziny-v2.css` | все стили блоков (база + блоки) |
 | `tpl/css/fonts-2026.css`, `tpl/fonts/` | шрифт Nunito Sans — см. шаг 0 |
 | `tpl/js/internet-magaziny-v2.js` | скрипты блоков |
-| `tpl/images/internet-magaziny-v2/` | картинки (30 шт.) |
+| `tpl/images/internet-magaziny-v2/` | картинки (38 шт.) |
 | `preview.html` | превью: открыть в браузере и посмотреть, как должно выглядеть |
 
 ## Как встроить
@@ -39,11 +39,18 @@
 |---|---|
 | `#feedback` | `site:callback` |
 | `#hero` | `c2l-hero-store` |
+| `#categories` | `c2l-rail-cards` |
 | `#mailing` | `c2l-mailing-form` |
 | `#manager` | `c2l-step-scene` |
+| `#security` | `c2l-security-scene` |
+| `#features` | `c2l-feature-grid` |
+| `#integrations` | `c2l-logo-wall` |
 | `#case` | `c2l-case-photo` |
 | `#benefits` | `c2l-proof-bento` |
-| `#security` | `c2l-security-scene` |
+| `#trust` | `c2l-trust-lattice` |
+| `#service` | `c2l-numbered-trio` |
+| `#pricing` | `c2l-pricing` |
+| `#start` | `c2l-action-field` |
 
 ## Важно знать
 
